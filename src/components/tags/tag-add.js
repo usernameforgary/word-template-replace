@@ -35,6 +35,10 @@ class TagAdd extends React.Component {
                 {
                   required: true,
                   message: "Please input your tag key"
+                },
+                {
+                  pattern: new RegExp('\\w', 'g'),
+                  message: 'Tag key only allow alphanumeric characters or underscore'
                 }
               ],
             })(

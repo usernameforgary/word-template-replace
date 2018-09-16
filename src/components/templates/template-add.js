@@ -23,7 +23,7 @@ class TemplateAdd extends React.Component {
   }
 
   filterOption = (inputValue, option) => {
-    return option.description.indexOf(inputValue) > -1;
+    return option.title.indexOf(inputValue) > -1;
   }
 
   handleChange = (targetKeys, direction) => {
@@ -50,10 +50,10 @@ class TemplateAdd extends React.Component {
     return (
       <LayoutDefault>
         {
-          (this.props.addErrorMsg) ? (
+          (this.props.addMessage) ? (
             <Alert
-              message= {this.props.addErrorMsg}
-              type="error"
+              message= {this.props.addMessage}
+              type= {this.props.messageType}
               closable
               afterClose={this.closeAlertMsg}
             />
@@ -104,14 +104,15 @@ class TemplateAdd extends React.Component {
 const mapStateToProps = state => ({
   sourceTags: state.templates.addTemplate.sourceTags,
   selectedTags: state.templates.addTemplate.selectedTags,
-  addErrorMsg: state.templates.addTemplate.addErrorMsg,
+  addMessage: state.templates.addTemplate.addMessage,
+  messageType: state.templates.addTemplate.messageType,
 })
 
 const mapDispatchToProps = dispatch => ({
   getTransferSourceTags: () => dispatch(getTransferSourceTags()),
   updateSelectedTag: (targetKeys, direction) => dispatch(updateSelectedTag(targetKeys, direction)),
   saveTemplate: (templateData) => dispatch(saveTemplate(templateData)),
-  updateAlertMessage: (msg) => dispatch(updateAlertMessage(msg))
+  updateAlertMessage: (msg, msgType) => dispatch(updateAlertMessage(msg, msgType))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(TemplateAdd))

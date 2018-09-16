@@ -37,6 +37,15 @@ class LayoutDefault extends React.Component {
     this.props.onCollapse(!this.props.sideBar.collapsed)
   }
 
+  componentDidMount() {
+    console.dir(`layout-default component did mount`)
+  }
+  
+  onOpenChange = (openKeys) => {
+    const latestOpenKey = openKeys.find(key => this.state.openKeys.indexOf(key) === -1);
+    this.setState({ openKeys });
+  }
+
   render() {
     return (
       <Layout style={{ minHeight: '100vh' }}>
@@ -56,7 +65,9 @@ class LayoutDefault extends React.Component {
           >
             <Menu theme="light"
               defaultOpenKeys={[this.props.sideBar.subMenuKey]}
-              defaultSelectedKeys={[this.props.sideBar.menuItemKey]} mode="inline">
+              defaultSelectedKeys={[this.props.sideBar.menuItemKey]}
+              selectedKeys={[this.props.sideBar.menuItemKey]}
+              mode="inline">
               <Menu.Item 
                 key={KEY_MENU_ITEM_EXPORT} 
                 onClick={({item, key, keyPath})=> {

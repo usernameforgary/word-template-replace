@@ -1,6 +1,7 @@
 import {getAllTags} from './tag'
 import {SERVER_URL_TEMPLATE_ADD, SERVER_URL_TEMPLATE_LIST_ALL} from '../consts/urls'
 import { fetchPostJson, fetchGet } from '../lib/customFetch'
+import { menuSwitch } from './side-bar'
 
 const ADD_TEMPLATE = 'ADD_TEMPLATE'
 const LIST_TEMPLATE = 'LIST_TEMPLATE'
@@ -12,7 +13,8 @@ const UPDATE_ADD_ERROR_MSG = 'UPDATE_ADD_ERROR_MSG'
 const initialState = {
   templates: [],
   addTemplate: {
-    addErrorMsg: '',
+    addMessage: '',
+    messageType: 'error',
     sourceTags: [],
     selectedTags: []
   }
@@ -49,7 +51,8 @@ const reducer = (state, action) => {
     case UPDATE_ADD_ERROR_MSG:
       return Object.assign({}, {...state}, {
         addTemplate: Object.assign({}, {...state.addTemplate}, {
-          addErrorMsg: action.msg
+          addMessage: action.msg,
+          messageType: action.msgType 
         })
       })
     default:
@@ -77,15 +80,16 @@ const listTemplate = (templates) => ({
   type: LIST_TEMPLATE,
   templates
 })
-const updateErrorMessage = (msg) => ({
+const updateMessage = (msg, msgType) => ({
   type: UPDATE_ADD_ERROR_MSG,
-  msg
+  msg,
+  msgType
 })
 
 
-const updateAlertMessage = (msg) => {
+const updateAlertMessage = (msg, msgType = 'error') => {
   return dispatch => {
-    dispatch(updateErrorMessage(msg))
+    dispatch(updateMessage(msg, msgType))
   }
 }
 
@@ -119,14 +123,13 @@ const saveTemplate = (templateData) => {
       .then(res => res.json())
       .then(json => {
         if(json.success) {
-          //TODO
-          console.dir(json.payload)
+          dispatch(updateMessage(`Template add successfully`, 'success'))
         } else {
-          dispatch(updateErrorMessage(json.error || json))
+          dispatch(updateMessage(json.error || json, 'error'))
         }
       })
       .catch(e => {
-        console.error(`template save catch error: ${e.message || e}`)
+        dispatch(updateMessage(`template save catch error: ${e.message || e}`, 'error'))
       })
   }
 }
@@ -141,18 +144,25 @@ const getTemplates = () => {
           templates = templates.map(template => Object.assign({}, {...template}, {key: template._id}))
           dispatch(listTemplate(templates))
         } else {
-          dispatch(updateErrorMessage(json.message || json))
+          dispatch(updateMessage(json.error || json, 'error'))
         }
       })
       .catch(e => {
-          console.error(`fetch template list catch error: ${e.message || e}`)
+        dispatch(updateMessage(`fetch template list catch error: ${e.message || e}`, 'error'))
       })
+  }
+}
+
+const setCurrentSideBar = (subMenu, menuItem) => {
+  return dispatch => {
+    dispatch(menuSwitch(subMenu, menuItem))
   }
 }
 
 export {
   reducer as default,
   initialState as templateInitialState,
+  setCurrentSideBar,
   getTransferSourceTags,
   updateSelectedTag,
   saveTemplate,
